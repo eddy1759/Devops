@@ -144,14 +144,25 @@ const updateUser = async (req, res) => {
             });
         }
         const { name, email, password } = req.body;
-        if (!name || !email || !(await(user.comparePassword(password)))) {
-            return res.status(400).json({ 
-                status: false,
-                message: 'Required fields missing or password is incorrect' 
-            });
-        };
 
-        const updatedUser = await User.updateOne({ _id: req.params.id }, { name, email, password }, { new: true });
+        const updates = {};
+
+        if (name) updates.name = name;
+        if (email) updates.email = email;
+        if (password){
+            if (await(user.comparePassword(password))) {
+                updates.password = password;
+    
+            } else {
+                return res.status(400).json({ 
+                    status: false,
+                    message: 'Required fields missing or password is incorrect' 
+                });
+            }
+        }
+    
+        const updatedUser = await User.findByIdAndUpdate({ _id: req.params.id }, updates, { new: true });
+
         return res.status(200).json({ status: true, 
             data: {
             user: updatedUser
