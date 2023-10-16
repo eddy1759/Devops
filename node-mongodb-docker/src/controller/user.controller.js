@@ -1,29 +1,36 @@
 const User = require('../models/user.model');
 const { generateAuthToken } = require('../utils/auth');
 
-// A Controller to handle user signup with necessary validations
 const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
-        return res.status(400).json({ 
-            status: false,
-            message: 'Required fields missing' 
-        });
-    }
+        if (!name || !email || !password) {
+            return res.status(400).json({ 
+                status: false,
+                message: 'Required fields missing' 
+            });
+        }
 
-    const userBody = {
-        name,
-        email,
-        password,
-        role: req.body.role
-    };
+        let user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ 
+                status: false,
+                message: 'User already exists, do log in' 
+            });
+        }
 
-    const user = new User(userBody);
-    await user.save();
+        const userBody = {
+            name,
+            email,
+            password,
+            role: req.body.role
+        };
 
-    return res.status(201).json({ status: true, message: 'User created successfully' });
+        user = new User(userBody);
+        await user.save();
+
+        return res.status(201).json({ status: true, message: 'User created successfully' });
 
     } catch (error) {
         console.error(error);

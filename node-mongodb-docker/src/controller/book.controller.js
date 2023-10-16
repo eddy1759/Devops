@@ -78,89 +78,6 @@ const getBookById = async (req, res) => {
     }
 }
 
-const getBooksByAuthor = async (req, res) => {
-    try {
-        const books = await Book.find({ author: req.params.author });
-        if (!books) {
-            return res.status(404).json({ 
-                status: false,
-                message: 'Books not found' 
-            });
-        }
-        return res.status(200).json({ 
-            status: true, 
-            message: 'Books fetched successfully',
-            books 
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            status: false,
-            message: 'Internal Server Error',
-            error: error.message
-        })
-    }
-}
-
-const getBooksByPrice = async (req, res) => {
-    try {
-        const books = await Book.find({ price: { $gte: req.params.min, $lte: req.params.max } });
-        if (!books) {
-            return res.status(404).json({ 
-                status: false,
-                message: 'Books not found' 
-            });
-        }
-        return res.status(200).json({ status: true, books });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            status: false,
-            message: 'Internal Server Error',
-            error: error.message
-        })
-    }
-}
-
-const searchBooks = async (req, res) => {
-    try {
-        const books = await Book.find({ $text: { $search: req.params.query } });
-        if (!books) {
-            return res.status(404).json({ 
-                status: false,
-                message: 'Books not found' 
-            });
-        }
-        return res.status(200).json({ status: true, books });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            status: false,
-            message: 'Internal Server Error',
-            error: error.message
-        })
-    }
-}
-
-const getLatestBooks = async (req, res) => {
-    try {
-        const books = await Book.find({}).sort({ created_at: -1 }).limit(5);
-        if (!books) {
-            return res.status(404).json({ 
-                status: false,
-                message: 'Books not found' 
-            });
-        }
-        return res.status(200).json({ status: true, books });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            status: false,
-            message: 'Internal Server Error',
-            error: error.message
-        })
-    }
-}
 
 const updateBook = async (req, res) => {
     try {
@@ -173,33 +90,33 @@ const updateBook = async (req, res) => {
             });
         }
 
-        const { title, author, description } = req.body;
+        const { title, author, description, price, isbn} = req.body;
 
-        if (!title || !author || !description || !price || !isbn) {
-            return res.status(400).json({ 
+        const updates = {};
+
+        if (title) updates.title = title;
+        if (author) updates.author = author;
+        if (description) updates.description = description;
+        if (price) updates.price = price;
+        if (isbn) updates.isbn = isbn;
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({
                 status: false,
-                message: 'Required fields missing' 
+                message: 'Required fields missing'
             });
         }
 
-        const bookBody = {
-            title,
-            author,
-            description,
-            price,
-            isbn
-        };
+        const updateBook = await Book.findByIdAndUpdate(req.params.id, updates, { new: true });
 
-        const book = await Book.findByIdAndUpdate(req.params.id, bookBody, { new: true });
-
-        if (!book) {
+       if (!updateBook) {
             return res.status(404).json({ 
                 status: false,
                 message: 'Book not found' 
             });
         }
 
-        return res.status(200).json({ status: true, message: 'Book updated successfully', book });
+        return res.status(200).json({ status: true, message: 'Book updated successfully', data: updateBook });
 
     } catch (error) {
         console.error(error);
@@ -240,14 +157,11 @@ const deleteBook = async (req, res) => {
     }
 }
 
+
 module.exports = {
     createBook,
     getAllBooks,
     getBookById,
-    getBooksByAuthor,
-    getBooksByPrice,
-    searchBooks,
-    getLatestBooks,
     updateBook,
     deleteBook
 }

@@ -12,6 +12,7 @@ const bookSchema = new Schema({
     updated_at: Date
 });
 
+
 //remmove the _v from the response
 bookSchema.methods.toJSON = function () {
     var obj = this.toObject();
