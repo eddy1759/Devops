@@ -2,6 +2,15 @@ const Book = require('../models/book.model');
 
 const createBook = async (req, res) => {
     try {
+
+        const userRole = req.user.role;
+        if (userRole !== 'admin') {
+            return res.status(401).json({
+                status: false,
+                message: 'Unauthorized access'
+            });
+        }
+        
         const { title, author, description, price, isbn } = req.body;
         
         if (!title || !author || !description || !price || !isbn) {
