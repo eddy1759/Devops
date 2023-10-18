@@ -65,8 +65,8 @@ button:hover {
     font-size: 14px;
 }
 
-a {
-    color: #0074e4;
+p a {
+    color: #025099;
     text-decoration: none;
     cursor: pointer;
 }
