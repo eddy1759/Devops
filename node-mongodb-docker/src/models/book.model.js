@@ -8,6 +8,9 @@ const bookSchema = new Schema({
     description: String,
     price: Number,
     isbn: String,
+    genre: String,
+    rating: Number,
+    bookImageUrl: String,
     created_at: Date,
     updated_at: Date
 });
