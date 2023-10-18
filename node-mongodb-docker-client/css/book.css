@@ -6,7 +6,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: auto;
+    overflow-y: scroll;
     flex-direction: column;
 }
 
@@ -39,11 +40,22 @@ th {
 
 #book-details {
     display: none;
-    margin-top: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 20px;
-    border: 1px solid #ddd;
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#book-details img {
+    max-width: 200px;
+    margin-bottom: 20px;
 }
 
 #book-details h2 {
@@ -54,4 +66,8 @@ th {
     margin: 0;
     margin-bottom: 10px;
     color: #555;
+}
+
+#books-table {
+    margin-top: 50px;
 }
